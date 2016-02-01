@@ -10,26 +10,32 @@ public class Symbol implements SExpression {
     public final String name; // Si el definiu privat caldrà un getter
 
     public Symbol(String name) {
-        throw new UnsupportedOperationException("not implemented yet");
+        this.name = name;
     }
 
     @Override
     public SExpression eval(Environment env) {
-        throw new UnsupportedOperationException("not implemented yet");
+        return env.find(this);
     }
 
     @Override
     public boolean equals(Object o) {
-        throw new UnsupportedOperationException("not implemented yet");
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof Symbol) {
+            return this.name.equals(((Symbol) o).name);
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        throw new UnsupportedOperationException("not implemented yet");
+        return name.hashCode();
     }
 
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("not implemented yet");
+        return name;
     }
 }
