@@ -7,26 +7,29 @@ public class Integer implements SExpression {
     public final int value; // Si el definiu privat caldrà un getter
 
     public Integer(int value) {
-        throw new UnsupportedOperationException("not implemented yet");
+        this.value = value;
     }
 
     @Override
     public SExpression eval(Environment env) {
-        throw new UnsupportedOperationException("not implemented yet");
+        return this;
     }
 
     @Override
     public boolean equals(Object o) {
-        throw new UnsupportedOperationException("not implemented yet");
+        if (o instanceof Integer) {
+            return value == ((Integer) o).value;
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        throw new UnsupportedOperationException("not implemented yet");
+        return value;
     }
 
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("not implemented yet");
+        return java.lang.Integer.toString(value);
     }
 }
