@@ -9,32 +9,47 @@ import java.util.Map;
 public class NestedMap implements Environment {
 
     private final Map<Symbol, SExpression> map;
+    private final NestedMap parent;
 
     public NestedMap() {
         map = new HashMap<Symbol, SExpression>();
+        parent = null;
+    }
+
+    private NestedMap(NestedMap parent) {
+        map = new HashMap<Symbol, SExpression>();
+        this.parent = parent;
     }
 
     @Override
     public void bindGlobal(Symbol symbol, SExpression value) {
-        map.put(symbol, value);
+        NestedMap global = (parent == null) ? this : parent;
+        while (global.parent != null) {
+            global = global.parent;
+        }
+        global.bind(symbol, value);
     }
 
     @Override
     public SExpression find(Symbol symbol) {
-        if (!map.containsKey(symbol)) {
-            throw new EvaluationError("Symbol " + symbol + " not found.");
+        NestedMap env = this;
+        while (env != null) {
+            if (env.map.containsKey(symbol)) {
+                return env.map.get(symbol);
+            }
+            env = env.parent;
         }
-        return map.get(symbol);
+        throw new EvaluationError("Symbol " + symbol + " not found.");
     }
 
     @Override
     public Environment extend() {
-        throw new UnsupportedOperationException("not implemented yet");
+        return new NestedMap(this);
     }
 
     @Override
     public void bind(Symbol symbol, SExpression value) {
-        throw new UnsupportedOperationException("not implemented yet");
+        map.put(symbol, value);
     }
 
 }
