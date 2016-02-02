@@ -62,8 +62,8 @@ public class Primitives {
                     throw new EvaluationError("DEFINE should have two arguments.");
                 }
                 try {
-                    Symbol sym = (Symbol) ListOps.car(args);
-                    SExpression value = ListOps.car(ListOps.cdr(args)).eval(env);
+                    Symbol sym = (Symbol) ListOps.getCar(args, 0);
+                    SExpression value = ListOps.getCar(args, 1).eval(env);
                     env.bindGlobal(sym, value);
                 } catch (ClassCastException ex) {
                     throw new EvaluationError("DEFINE's first argument should"
@@ -89,8 +89,8 @@ public class Primitives {
                 if (ListOps.length(evargs) != 2) {
                     throw new EvaluationError("CONS needs two arguments.");
                 }
-                return ListOps.cons(ListOps.car(evargs),
-                        ListOps.car(ListOps.nth(evargs, 1)));
+                return ListOps.cons(ListOps.getCar(evargs, 0),
+                        ListOps.getCar(evargs, 1));
             }
         });
 
@@ -121,9 +121,8 @@ public class Primitives {
                 if (ListOps.length(evargs) != 2) {
                     throw new EvaluationError("EQ needs two arguments.");
                 }
-                return ListOps.car(ListOps.nth(evargs, 0)).equals(
-                        ListOps.car(ListOps.nth(evargs, 1)))
-                        ? Symbol.TRUE : Symbol.NIL;
+                return ListOps.getCar(evargs, 0).equals(
+                        ListOps.getCar(evargs, 1)) ? Symbol.TRUE : Symbol.NIL;
             }
         });
 
@@ -134,10 +133,9 @@ public class Primitives {
                     throw new EvaluationError("IF needs condition, then and"
                             + " else parts.");
                 }
-                return ListOps.car(ListOps.nth(args, 0)).eval(env).equals(
-                        Symbol.TRUE)
-                        ? ListOps.car(ListOps.nth(args, 1)).eval(env)
-                        : ListOps.car(ListOps.nth(args, 2)).eval(env);
+                return ListOps.getCar(args, 0).eval(env).equals(Symbol.TRUE)
+                        ? ListOps.getCar(args, 1).eval(env)
+                        : ListOps.getCar(args, 2).eval(env);
             }
         });
 
@@ -147,8 +145,8 @@ public class Primitives {
                 if (ListOps.length(args) != 2) {
                     throw new EvaluationError("LAMBDA needs two args.");
                 }
-                return new Lambda(ListOps.car(ListOps.nth(args, 0)),
-                        ListOps.car(ListOps.nth(args, 1)), env);
+                return new Lambda(ListOps.getCar(args, 0),
+                        ListOps.getCar(args, 1), env);
             }
         });
 
@@ -168,8 +166,8 @@ public class Primitives {
                 if (ListOps.length(evargs) != 2) {
                     throw new EvaluationError("APPLY should get two arguments.");
                 }
-                return ((Function) ListOps.car(evargs).eval(env)).apply(
-                        ListOps.car(ListOps.nth(evargs, 1)), env);
+                return ((Function) ListOps.getCar(evargs, 0).eval(env)).apply(
+                        ListOps.getCar(evargs, 1), env);
             }
         });
     }
