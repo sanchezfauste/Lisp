@@ -55,7 +55,7 @@ public class ListOps {
     public static SExpression nth(SExpression sexpr, int n) {
         SExpression next = sexpr;
         for (int i = 0; i < n; i++) {
-            if (next.equals(Symbol.NIL)) return Symbol.NIL;
+            if (next.equals(Symbol.NIL)) throw new IllegalArgumentException();
             ConsCell cell = (ConsCell) next;
             next = cell.cdr;
         }
