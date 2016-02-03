@@ -2,10 +2,21 @@ package cat.udl.eps.butterp.data;
 
 import cat.udl.eps.butterp.environment.Environment;
 
+/**
+ * Represents an integer value in Lisp.
+ *
+ * @author Meritxell Jordana
+ * @author Marc Sanchez
+ */
 public class Integer implements SExpression {
 
-    public final int value; // Si el definiu privat caldrà un getter
+    public final int value;
 
+    /**
+     * Constructs an integer with the specified value.
+     *
+     * @param value the value of integer.
+     */
     public Integer(int value) {
         this.value = value;
     }

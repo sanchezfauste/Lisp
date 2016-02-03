@@ -11,8 +11,19 @@ import cat.udl.eps.butterp.data.Special;
 import cat.udl.eps.butterp.data.Symbol;
 import cat.udl.eps.butterp.environment.Environment;
 
+/**
+ * This class loads primitive symbols on specified environment.
+ *
+ * @author Meritxell Jordana
+ * @author Marc Sanchez
+ */
 public class Primitives {
 
+    /**
+     * Loads primitive symbols on specified environment.
+     *
+     * @param env environment where the primitives where loaded.
+     */
     public static void loadPrimitives(Environment env) {
         env.bindGlobal(Symbol.NIL, Symbol.NIL);
         env.bindGlobal(Symbol.TRUE, Symbol.TRUE);

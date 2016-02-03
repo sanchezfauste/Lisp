@@ -6,11 +6,21 @@ import cat.udl.eps.butterp.data.Symbol;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Implementation of environment using map.
+ *
+ * @author Meritxell Jordana
+ * @author Marc Sanchez
+ */
 public class NestedMap implements Environment {
 
     private final Map<Symbol, SExpression> map;
+    // Parent environment.
     private final NestedMap parent;
 
+    /**
+     * Creates a new environment with any associated symbol.
+     */
     public NestedMap() {
         map = new HashMap<Symbol, SExpression>();
         parent = null;

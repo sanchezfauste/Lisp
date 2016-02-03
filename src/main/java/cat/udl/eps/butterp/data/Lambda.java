@@ -2,12 +2,25 @@ package cat.udl.eps.butterp.data;
 
 import cat.udl.eps.butterp.environment.Environment;
 
+/**
+ * Represents a lambda function.
+ *
+ * @author Meritxell Jordana
+ * @author Marc Sanchez
+ */
 public class Lambda extends Function {
-    
+
     private final SExpression params;
     private final SExpression body;
     private final Environment definitionEnv;
 
+    /**
+     * Constructs a new lambda function.
+     *
+     * @param params list containing the parameters of function.
+     * @param body the body of lambda function.
+     * @param definitionEnv environment where the function was defined.
+     */
     public Lambda(SExpression params, SExpression body, Environment definitionEnv) {
         this.params = params;
         this.body = body;

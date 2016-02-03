@@ -2,11 +2,29 @@ package cat.udl.eps.butterp.data;
 
 import cat.udl.eps.butterp.environment.Environment;
 
+/**
+ * It is the atomic element of a Lisp list.
+ *
+ * @author Meritxell Jordana
+ * @author Marc Sanchez
+ */
 public class ConsCell implements SExpression {
 
-    public final SExpression car; // Si el definiu privat caldrà un getter
-    public final SExpression cdr; // Si el definiu privat caldrà un getter
+    /**
+     * Represents the value of cell.
+     */
+    public final SExpression car;
+    /**
+     * Points to the next cell of the list or nil if is last.
+     */
+    public final SExpression cdr;
 
+    /**
+     * Constructs a cell.
+     *
+     * @param car value of cell.
+     * @param cdr next cell of the list or nil if is last.
+     */
     public ConsCell(SExpression car, SExpression cdr) {
         this.car = car;
         this.cdr = cdr;
