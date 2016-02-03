@@ -133,7 +133,7 @@ public class Primitives {
                     throw new EvaluationError("IF needs condition, then and"
                             + " else parts.");
                 }
-                return ListOps.getCar(args, 0).eval(env).equals(Symbol.TRUE)
+                return !ListOps.getCar(args, 0).eval(env).equals(Symbol.NIL)
                         ? ListOps.getCar(args, 1).eval(env)
                         : ListOps.getCar(args, 2).eval(env);
             }
@@ -144,6 +144,10 @@ public class Primitives {
             public SExpression applySpecial(SExpression args, Environment env) {
                 if (ListOps.length(args) != 2) {
                     throw new EvaluationError("LAMBDA needs two args.");
+                }
+                if (!ListOps.isListOf(ListOps.getCar(args, 0), Symbol.class)) {
+                    throw new EvaluationError("LAMBDA first param should be a"
+                            + " list of symbols.");
                 }
                 return new Lambda(ListOps.getCar(args, 0),
                         ListOps.getCar(args, 1), env);
@@ -166,8 +170,17 @@ public class Primitives {
                 if (ListOps.length(evargs) != 2) {
                     throw new EvaluationError("APPLY should get two arguments.");
                 }
-                return ((Function) ListOps.getCar(evargs, 0).eval(env)).apply(
-                        ListOps.getCar(evargs, 1), env);
+                if (!ListOps.isListOf(ListOps.nth(evargs, 1), ConsCell.class)) {
+                    throw new EvaluationError("APPLY second param should be a"
+                            + " list.");
+                }
+                try {
+                    Function fun = (Function) ListOps.getCar(evargs, 0).eval(env);
+                    return fun.apply(ListOps.getCar(evargs, 1), env);
+                } catch (ClassCastException ex) {
+                    throw new EvaluationError("APPLY first param should be a"
+                            + " function.");
+                }
             }
         });
     }
