@@ -86,6 +86,9 @@ public class ListOps {
     }
 
     public static boolean isListOf(SExpression params, Class<?> klass) {
+        if (!ListOps.isList(params)) {
+            return false;
+        }
         SExpression next = params;
         while (!next.equals(Symbol.NIL)) {
             ConsCell cell = (ConsCell) next;
@@ -95,6 +98,10 @@ public class ListOps {
             next = cell.cdr;
         }
         return true;
+    }
+
+    public static boolean isList(SExpression params) {
+        return params.equals(Symbol.NIL) || params instanceof ConsCell;
     }
 
 }

@@ -97,6 +97,9 @@ public class Primitives {
         env.bindGlobal(new Symbol("car"), new Function() {
             @Override
             public SExpression apply(SExpression evargs, Environment env) {
+                if (ListOps.length(evargs) != 1) {
+                    throw new EvaluationError("CAR needs an argument.");
+                }
                 return ListOps.car(ListOps.car(evargs));
             }
         });
@@ -104,6 +107,9 @@ public class Primitives {
         env.bindGlobal(new Symbol("cdr"), new Function() {
             @Override
             public SExpression apply(SExpression evargs, Environment env) {
+                if (ListOps.length(evargs) != 1) {
+                    throw new EvaluationError("CDR needs an argument.");
+                }
                 return ListOps.cdr(ListOps.car(evargs));
             }
         });
@@ -170,7 +176,7 @@ public class Primitives {
                 if (ListOps.length(evargs) != 2) {
                     throw new EvaluationError("APPLY should get two arguments.");
                 }
-                if (!ListOps.isListOf(ListOps.nth(evargs, 1), ConsCell.class)) {
+                if (!ListOps.isList(ListOps.nth(evargs, 1))) {
                     throw new EvaluationError("APPLY second param should be a"
                             + " list.");
                 }
