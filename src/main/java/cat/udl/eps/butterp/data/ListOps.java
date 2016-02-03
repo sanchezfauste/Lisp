@@ -12,14 +12,14 @@ public class ListOps {
         if (cdr.equals(Symbol.NIL) || cdr instanceof ConsCell) {
             return new ConsCell(car, cdr);
         }
-        throw new EvaluationError("CONS second argument should be list or nil");
+        throw new EvaluationError("CONS second argument should be list or nil.");
     }
 
     public static SExpression car(SExpression sexpr) {
         if (sexpr instanceof ConsCell) {
             return ((ConsCell) sexpr).car;
         }
-        throw new EvaluationError("CAR needs a list argument");
+        throw new EvaluationError("CAR needs a list argument.");
     }
 
     public static SExpression getCar(SExpression sexpr, int index) {
@@ -30,7 +30,7 @@ public class ListOps {
         if (sexpr instanceof ConsCell) {
             return ((ConsCell) sexpr).cdr;
         }
-        throw new EvaluationError("CDR needs a list argument");
+        throw new EvaluationError("CDR needs a list argument.");
     }
 
     public static SExpression getCdr(SExpression sexpr, int index) {
@@ -89,7 +89,7 @@ public class ListOps {
         SExpression next = params;
         while (!next.equals(Symbol.NIL)) {
             ConsCell cell = (ConsCell) next;
-            if (klass.isInstance(cell.car)) {
+            if (!klass.isInstance(cell.car)) {
                 return false;
             }
             next = cell.cdr;
