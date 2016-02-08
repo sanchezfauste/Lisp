@@ -22,7 +22,7 @@ Punts forts:
 
 2. Les funcions lambda permeten definir funcions en temps d'execució i això pot ser útil a l'hora de realitzar càlculs.
 
-3. La nostra implementació de l'interpret és totalment iterativa.
+3. La nostra implementació de l'intèrpret és totalment iterativa.
 
 Punts febles:
 -------------
@@ -30,4 +30,3 @@ Punts febles:
 1. Es podrien haver implementat més funcions primitives com per exemple la divisió entera, la resta o el mòdul.
 
 2. Potser es podria haver implementat una classe que retornés un iterador per recòrrer les llistes de Lisp, però no ho hem considerat necessari, ja que la manera en que recorrem les llistes ja ens sembla prou natural.
-
