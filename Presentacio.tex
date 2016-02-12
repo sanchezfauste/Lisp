@@ -1,0 +1,234 @@
+%% LyX 2.1.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[catalan]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pgrey}{rgb}{0.46,0.45,0.48}
+
+\lstset{language=Java,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+  basicstyle=\ttfamily\scriptsize,
+  moredelim=[il][\textcolor{pgrey}]{$$},
+  moredelim=[is][\textcolor{pgrey}]{\%\%}{\%\%},
+}
+\ifx\hypersetup\undefined
+  \AtBeginDocument{%
+    \hypersetup{unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true}
+  }
+\else
+  \hypersetup{unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true}
+\fi
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ % (ERT) argument for the TOC
+ \AtBeginDocument{%
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usetheme{Warsaw}
+%\usetheme{shadow}
+
+\makeatother
+
+\begin{document}
+
+\title{Concurs de Programació "Premi Josep Mª Ribó"}
+\subtitle{Intèrpret de Lisp}
+
+\author{Meritxell Jordana Gavieiro \and Marc Sánchez Fauste}
+\makebeamertitle
+
+\begin{frame}[fragile]
+\frametitle{Mètode eval de ConsCell}
+\begin{lstlisting}
+@Override
+public SExpression eval(Environment env) {
+    SExpression result = car.eval(env);
+    /* If it's a function we first evaluate the
+       arguments and then call apply method */
+    if (result instanceof Function) {
+        return ((Function) result).apply(
+                ListOps.getEvaluatedList(cdr, env), env);
+    }
+    /* If it's a special function the apply
+       method is called without evaluate the
+       argument list previously */
+    if (result instanceof Special) {
+        return ((Special) result).applySpecial(cdr, env);
+    }
+    /* A ConsCell can't be evaluated if is not a function */
+    throw new EvaluationError("Cannot apply "
+            + result + ".");
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Primitive add}
+\begin{lstlisting}
+@Override
+public SExpression apply(SExpression evargs, Environment env) {
+    int sum = 0;
+    /* Iterate all the integer elements of
+       arguments list and accumulate them */
+    SExpression next = evargs;
+    while (!next.equals(Symbol.NIL)) {
+        ConsCell cell = (ConsCell) next;
+        try {
+            sum += ((Integer) cell.car).value;
+        } catch (ClassCastException ex) {
+            throw new EvaluationError("ADD should get"
+                    + " only integer arguments.");
+        }
+        next = cell.cdr;
+    }
+    return new Integer(sum);
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Primitive list}
+\begin{lstlisting}
+env.bindGlobal(new Symbol("list"), new Function() {
+    @Override
+    public SExpression apply(SExpression evargs, 
+            Environment env) {
+        /* The arguments are already in a previously
+           evaluated list (by ConsCell eval method) 
+           so simply return it */
+        return evargs;
+    }
+});
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Mètode getCar}
+\begin{lstlisting}
+/**
+* Get car value of cell whose position on 
+* list has the specified index.
+*
+* @param sexpr a list.
+* @param index index of desired cell.
+* @return car value of cell with specified index.
+*/
+public static SExpression getCar(SExpression sexpr, 
+        int index) {
+    return ListOps.car(ListOps.nth(sexpr, index));
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forma especial if}
+\begin{lstlisting}
+@Override
+public SExpression applySpecial(SExpression args,
+        Environment env) {
+    if (ListOps.length(args) != 3) {
+        throw new EvaluationError("IF needs condition,"
+                + " then and else parts.");
+    }
+           /* Evaluate the condition argument and 
+              check if result is nil or not */
+    return !ListOps.getCar(args, 0).eval(env).
+            equals(Symbol.NIL) ?
+            /* If is not nil return second
+               argument evaluated (then) */
+            ListOps.getCar(args, 1).eval(env) :
+            /* If is nil return third 
+               argument evaluated (else) */
+            ListOps.getCar(args, 2).eval(env);
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forma especial lambda}
+\begin{lstlisting}
+@Override
+public SExpression applySpecial(SExpression args,
+        Environment env) {
+    if (ListOps.length(args) != 2) {
+        throw new EvaluationError("LAMBDA needs two args.");
+    }
+    /* Check if first argument is list of symbols */
+    if (!ListOps.isListOf(
+            ListOps.getCar(args, 0), Symbol.class)) {
+        throw new EvaluationError("LAMBDA first param"
+                + " should be a list of symbols.");
+    }
+    /* Return a new lambda function passing: 
+         - symbols list
+         - body of the function 
+         - the current environment */
+    return new Lambda(ListOps.getCar(args, 0),
+            ListOps.getCar(args, 1), env);
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Mètode apply de la classe Lambda}
+\begin{lstlisting}
+@Override
+public SExpression apply(SExpression evargs,
+        Environment callingEnv) {
+    int numberOfParams = ListOps.length(params);
+    /* Check if defined symbols when the function
+       was created and number of passed params coincide */
+    if (numberOfParams != ListOps.length(evargs)) {
+        throw new EvaluationError("Incorrect number of"
+                + " args in the call.");
+    }
+    /* Create a new environment whose parent is the
+       environment used at the moment of define 
+       lambda function */
+    Environment env = definitionEnv.extend();
+    /* Associate each symbol to each value 
+       specified in evargs */
+    for (int i = 0; i < numberOfParams; i++) {
+        env.bind((Symbol) ListOps.car(ListOps.nth(params, i)),
+                ListOps.car(ListOps.nth(evargs, i)));
+    }
+    return body.eval(env); // Evaluate body using new env.
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[plain,c]
+\begin{center}
+\Huge Valoració personal
+\end{center}
+
+\end{frame}
+
+\end{document}
